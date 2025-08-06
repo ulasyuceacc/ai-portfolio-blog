@@ -1,8 +1,21 @@
-# Use a lightweight Nginx image
+# Use an official Node.js runtime as a parent image
+FROM node:18-alpine as build
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application's source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Use a smaller, more secure image for the production environment
 FROM nginx:alpine
-
-# Copy the website's files to the Nginx public directory
-COPY . /usr/share/nginx/html
-
-# Expose port 80 to allow traffic to the web server
-EXPOSE 80
+COPY --from=build /app/build /usr/share/nginx/html
