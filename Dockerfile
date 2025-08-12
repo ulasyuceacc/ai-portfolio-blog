@@ -12,7 +12,7 @@ COPY js /usr/share/nginx/html/js
 COPY images /usr/share/nginx/html/images
 
 # Expose HTTP port
-EXPOSE 80
+EXPOSE 8080
 
 # Run Nginx in the foreground
 STOPSIGNAL SIGQUIT
