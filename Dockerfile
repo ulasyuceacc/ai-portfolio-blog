@@ -1,21 +1,19 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine as build
+# Lightweight Nginx image to serve a static site (HTML/CSS/JS)
+FROM nginx:1.27-alpine
 
-# Set the working directory
-WORKDIR /app
+# Clear default Nginx web root
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the package.json and package-lock.json
-COPY package*.json ./
+# Copy static assets into Nginx web root
+# Copy only the static site assets
+COPY *.html /usr/share/nginx/html/
+COPY css /usr/share/nginx/html/css
+COPY js /usr/share/nginx/html/js
+COPY images /usr/share/nginx/html/images
 
-# Install dependencies
-RUN npm install
+# Expose HTTP port
+EXPOSE 80
 
-# Copy the rest of the application's source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Use a smaller, more secure image for the production environment
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+# Run Nginx in the foreground
+STOPSIGNAL SIGQUIT
+CMD ["nginx", "-g", "daemon off;"]
